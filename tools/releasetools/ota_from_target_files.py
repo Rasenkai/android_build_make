@@ -242,7 +242,6 @@ OPTIONS.skip_postinstall = False
 OPTIONS.retrofit_dynamic_partitions = False
 OPTIONS.skip_compatibility_check = False
 OPTIONS.output_metadata_path = None
-OPTIONS.backuptool = False
 
 OPTIONS.override_device = 'auto'
 OPTIONS.backuptool = False
@@ -1020,18 +1019,11 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.UnpackPackageDir("install", "/tmp/install")
   script.SetPermissionsRecursive("/tmp/install", 0, 0, 0o755, 0o644, None, None)
   script.SetPermissionsRecursive("/tmp/install/bin", 0, 0, 0o755, 0o755, None, None)
-  script.RunBackup("check", sys_mount)
+  script.MountSys("check", sys_mount)
 
   if OPTIONS.backuptool:
-    script.RunBackup("backup", sys_mount)
+    script.MountSys("backup", sys_mount)
 
-  if target_info.get("system_root_image") == "true":
-    sysmount = "/"
-  else:
-    sysmount = "/system"
-
-  if OPTIONS.backuptool:
-    script.RunBackup("backup", sysmount)
 
   # All other partitions as well as the data wipe use 10% of the progress, and
   # the update of the system partition takes the remaining progress.
@@ -1110,7 +1102,7 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   if OPTIONS.backuptool:
     script.ShowProgress(0.02, 10)
-    script.RunBackup("restore", sysmount)
+    script.MountSys("restore", sys_mount)
 
 
   script.RunCleanCache()
